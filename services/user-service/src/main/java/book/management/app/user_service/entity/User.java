@@ -1,21 +1,27 @@
 package book.management.app.user_service.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
+@Schema(description = "User entity")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Schema(description = "Unique identifier of the user", example = "1")
     private Long id;
 
     @Column(name = "username")
+    @Schema(description = "Username of the user", example = "testuser")
     private String username;
 
     @Column(name = "password")
+    @Schema(description = "Password of the user", example = "pass123")
     private String password;
 
     @Column(name = "email")
+    @Schema(description = "Email address of the user", example = "test@example.com")
     private String email;
 
     @ManyToOne
