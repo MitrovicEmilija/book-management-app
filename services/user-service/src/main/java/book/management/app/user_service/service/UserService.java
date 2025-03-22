@@ -7,6 +7,8 @@ import book.management.app.user_service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserService {
@@ -20,7 +22,10 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     public User registerUser(String username, String email, String password, String roleName) {
+        logger.debug("Attempting to register user with username: {}", username);
         Role userRole = roleRepository.findByName(roleName);
         if (userRole == null) {
             userRole = new Role();
@@ -34,6 +39,7 @@ public class UserService {
         newUser.setPassword(passwordEncoder.encode(password));
         newUser.setRole(userRole);
 
+        logger.info("User registered successfully: {}", username);
         return userRepository.save(newUser);
     }
 }
