@@ -32,6 +32,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: List directory contents
+        run: ls -la
+
+      - name: List services directory contents
+        run: ls -la services
+
       - name: Set up JDK 22
         uses: actions/setup-java@v4
         with:
@@ -48,4 +54,4 @@ jobs:
 
       - name: Run tests
         run: mvn test -Dspring.datasource.url=jdbc:mysql://localhost:3306/BookManagement -Dspring.datasource.username=springstudent -Dspring.datasource.password=springstudent
-        working-directory: user-service  # Set the working directory to where pom.xml is located
+        working-directory: services/user-service  # Updated to the correct path
