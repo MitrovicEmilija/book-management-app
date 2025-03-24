@@ -1,4 +1,4 @@
-name: pipelines
+name: User Service Tests
 
 on:
   push:
@@ -48,5 +48,4 @@ jobs:
 
       - name: Run tests
         run: mvn test -Dspring.datasource.url=jdbc:mysql://localhost:3306/BookManagement -Dspring.datasource.username=springstudent -Dspring.datasource.password=springstudent
-        # Add this if pom.xml is in a subdirectory, e.g., 'backend':
-        # working-directory: backend
+        working-directory: user-service  # Set the working directory to where pom.xml is located
