@@ -1,0 +1,21 @@
+{"database":"Books","host":"localhost","level":"info","message":"Database configuration","service":"book-service","timestamp":"2025-03-29 11:00:38","user":"springstudent"}
+{"level":"info","message":"gRPC Book Service started on port 50051","service":"book-service","timestamp":"2025-03-29 11:00:38"}
+{"level":"info","message":"Database connected successfully","service":"book-service","timestamp":"2025-03-29 11:00:39"}
+{"level":"info","message":"Retrieved 3 books","service":"book-service","timestamp":"2025-03-29 11:00:59"}
+{"bookId":3,"level":"info","message":"GetBook request received","service":"book-service","timestamp":"2025-03-29 11:01:19"}
+{"bookId":3,"level":"info","message":"Book retrieved successfully","service":"book-service","timestamp":"2025-03-29 11:01:19"}
+{"level":"info","message":"GetBooksByUser request received","service":"book-service","timestamp":"2025-03-29 11:01:26","userId":"123"}
+{"level":"info","message":"Retrieved 2 books for user","service":"book-service","timestamp":"2025-03-29 11:01:26","userId":"123"}
+{"id":1,"level":"info","message":"UpdateBook request received","service":"book-service","timestamp":"2025-03-29 11:02:38","title":"The Great Gatsby (Updated)"}
+{"id":1,"level":"info","message":"Book updated successfully","service":"book-service","timestamp":"2025-03-29 11:02:38"}
+{"bookId":1,"level":"info","message":"GetBook request received","service":"book-service","timestamp":"2025-03-29 11:02:57"}
+{"bookId":1,"level":"info","message":"Book retrieved successfully","service":"book-service","timestamp":"2025-03-29 11:02:57"}
+{"level":"info","message":"CreateBook request received","service":"book-service","timestamp":"2025-03-29 11:03:08","title":"bla bla","userId":"345"}
+{"id":6,"level":"info","message":"Book created successfully","service":"book-service","timestamp":"2025-03-29 11:03:08","title":"bla bla","userId":"345"}
+{"bookId":6,"level":"info","message":"DeleteBook request received","service":"book-service","timestamp":"2025-03-29 11:03:22"}
+{"bookId":6,"level":"info","message":"Book deleted successfully","service":"book-service","timestamp":"2025-03-29 11:03:22"}
+{"level":"info","message":"Retrieved 3 books","service":"book-service","timestamp":"2025-03-29 11:05:48"}
+{"database":"Books","host":"localhost","level":"info","message":"Database configuration","service":"book-service","timestamp":"2025-03-29 11:05:56","user":"springstudent"}
+{"level":"info","message":"gRPC Book Service started on port 50051","service":"book-service","timestamp":"2025-03-29 11:05:56"}
+{"level":"info","message":"Database connected successfully","service":"book-service","timestamp":"2025-03-29 11:05:56"}
+{"level":"info","message":"Retrieved 3 books","service":"book-service","timestamp":"2025-03-29 11:06:03"}

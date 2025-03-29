@@ -1,5 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+const logger = require('./logger');
 require('dotenv').config({ path: '../.env' });
 
 const bookService = require('./service/bookService');
@@ -19,6 +20,6 @@ server.addService(bookProto.BookService.service, bookService);
 
 const port = process.env.PORT || 50051;
 server.bindAsync(`0.0.0.0:${port}`, grpc.ServerCredentials.createInsecure(), () => {
-  console.log(`gRPC Book Service running on port ${port}`);
+  logger.info(`gRPC Book Service started on port ${port}`);
   server.start();
 });
