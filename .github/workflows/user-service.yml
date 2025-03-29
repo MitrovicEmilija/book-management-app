@@ -16,10 +16,10 @@ jobs:
       mysql:
         image: mysql:8.0.32
         env:
-          MYSQL_ROOT_PASSWORD: Emce142107
+          MYSQL_ROOT_PASSWORD: secrets.MYSQL_PASSWORD
           MYSQL_DATABASE: BookManagement
-          MYSQL_USER: springstudent
-          MYSQL_PASSWORD: springstudent
+          MYSQL_USER: secrets.MYSQL_USER
+          MYSQL_PASSWORD: secrets.PASSWORD
         ports:
           - 3306:3306
         options: >-
@@ -54,4 +54,4 @@ jobs:
 
       - name: Run tests
         run: mvn test -Dspring.datasource.url=jdbc:mysql://localhost:3306/BookManagement -Dspring.datasource.username=springstudent -Dspring.datasource.password=springstudent
-        working-directory: services/user-service  # Updated to the correct path
+        working-directory: services/user-service 
