@@ -4,7 +4,7 @@
   "description": "This service is responsible for managing book data, including title, author, genre, and publication details.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +13,11 @@
     "@grpc/grpc-js": "^1.13.1",
     "@grpc/proto-loader": "^0.7.13",
     "dotenv": "^16.4.7",
-    "mysql2": "^3.14.0",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "jest": "^29.7.0",
+    "mysql2": "^3.14.0"
   }
 }

@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const logger = require('../logger');
+const grpc = require('@grpc/grpc-js');
 
 const bookService = {
     GetAllBooks: async (call, callback) => {
