@@ -18,8 +18,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: secrets.MYSQL_PASSWORD
           MYSQL_DATABASE: Books
-          MYSQL_USER: springstudent
-          MYSQL_PASSWORD: springstudent
+          MYSQL_USER: secrets.MYSQL_USER
+          MYSQL_PASSWORD: secrets.PASSWORD
         ports:
           - 3306:3306
         options: >-
