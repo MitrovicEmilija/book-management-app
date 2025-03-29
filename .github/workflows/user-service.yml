@@ -53,5 +53,5 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests
-        run: mvn test -X -Dspring.datasource.url=jdbc:mysql://localhost:3306/BookManagement -Dspring.datasource.username=${{ secrets.MYSQL_USER }} -Dspring.datasource.password=${{ secrets.MYSQL_PASSWORD }} -Djwt.secret=${{ secrets.JWT_SECRET }}
+        run: mvn test -X -Dspring.datasource.url=jdbc:mysql://localhost:3306/BookManagement -Dspring.datasource.username=${{ secrets.MYSQL_USER }} -Dspring.datasource.password=${{ secrets.MYSQL_PASSWORD }} -Djwt.secret=${{ secrets.JWT_SECRET }} -Djwt.expirationMs=${{ secrets.JWT_EXPIRATIONMS }}
         working-directory: services/user-service 
