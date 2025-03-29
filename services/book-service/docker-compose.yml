@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0.32
+    container_name: book-service-db-ita
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Emce142107
+      MYSQL_DATABASE: Books
+      MYSQL_USER: springstudent
+      MYSQL_PASSWORD: springstudent
+    ports:
+      - "3309:3306" # Different port from user-service to avoid conflicts
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - book-service-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  book-service-ita:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: book-service-ita
+    restart: always
+    environment:
+      DB_HOST: book-service-db-ita
+      DB_USER: springstudent
+      DB_PASSWORD: springstudent
+      DB_NAME: Books
+      PORT: 50051
+    ports:
+      - "50051:50051"
+    networks:
+      - book-service-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql-data:
+
+networks:
+  book-service-network:
+    driver: bridge
