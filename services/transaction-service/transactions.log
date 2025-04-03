@@ -1,0 +1,30 @@
+2025-04-03 09:57:21,028 [INFO] Starting transactions-service on port 6000
+2025-04-03 09:57:21,123 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://10.112.1.250:6000
+2025-04-03 09:57:21,123 [INFO] [33mPress CTRL+C to quit[0m
+2025-04-03 09:57:21,124 [INFO]  * Restarting with stat
+2025-04-03 09:57:21,340 [INFO] Starting transactions-service on port 6000
+2025-04-03 09:57:21,375 [WARNING]  * Debugger is active!
+2025-04-03 09:57:21,387 [INFO]  * Debugger PIN: 558-988-839
+2025-04-03 09:57:49,841 [INFO] Received POST request to create a transaction
+2025-04-03 09:57:49,978 [INFO] Transaction created with ID: 8
+2025-04-03 09:57:49,980 [INFO] 127.0.0.1 - - [03/Apr/2025 09:57:49] "[35m[1mPOST /transactions HTTP/1.1[0m" 201 -
+2025-04-03 09:57:59,051 [INFO] Received GET request to fetch all transactions
+2025-04-03 09:57:59,063 [INFO] Fetched 6 transactions
+2025-04-03 09:57:59,064 [INFO] 127.0.0.1 - - [03/Apr/2025 09:57:59] "GET /transactions HTTP/1.1" 200 -
+2025-04-03 09:58:13,583 [INFO] Received GET request to fetch transaction with ID: 8
+2025-04-03 09:58:13,599 [INFO] Transaction with ID 8 fetched successfully
+2025-04-03 09:58:13,600 [INFO] 127.0.0.1 - - [03/Apr/2025 09:58:13] "GET /transactions/8 HTTP/1.1" 200 -
+2025-04-03 09:58:21,264 [INFO] Received GET request to fetch transactions for user ID: 1
+2025-04-03 09:58:21,276 [INFO] Fetched 2 transactions for user ID: 1
+2025-04-03 09:58:21,276 [INFO] 127.0.0.1 - - [03/Apr/2025 09:58:21] "GET /transactions/user/1 HTTP/1.1" 200 -
+2025-04-03 09:58:58,584 [INFO] Received PUT request to update transaction with ID: 8
+2025-04-03 09:58:58,604 [INFO] Transaction with ID 8 updated successfully
+2025-04-03 09:58:58,604 [INFO] 127.0.0.1 - - [03/Apr/2025 09:58:58] "PUT /transactions/8 HTTP/1.1" 200 -
+2025-04-03 09:59:11,995 [INFO] Received DELETE request to delete transaction with ID: 7
+2025-04-03 09:59:12,006 [WARNING] Transaction with ID 7 not found for deletion
+2025-04-03 09:59:12,007 [INFO] 127.0.0.1 - - [03/Apr/2025 09:59:12] "[33mDELETE /transactions/7 HTTP/1.1[0m" 404 -
+2025-04-03 09:59:16,937 [INFO] Received DELETE request to delete transaction with ID: 8
+2025-04-03 09:59:16,948 [INFO] 127.0.0.1 - - [03/Apr/2025 09:59:16] "DELETE /transactions/8 HTTP/1.1" 200 -
