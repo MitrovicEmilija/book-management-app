@@ -1,8 +1,10 @@
-import mysql.connector
 import logging
-from flask import Flask, request, jsonify
-from config import Config
 
+from flask import Flask, request, jsonify
+
+from db import get_db_connection
+
+# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s [%(levelname)s] %(message)s',
@@ -15,20 +17,13 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-def get_db_connection():
-    return mysql.connector.connect(
-        host=Config.MYSQL_HOST,
-        user=Config.MYSQL_USER,
-        password=Config.MYSQL_PASSWORD,
-        database=Config.MYSQL_DB
-    )
-
-# Create a transaction
+# Create a new transaction
 @app.route('/transactions', methods=['POST'])
 def create_transaction():
     logger.info('Received POST request to create a transaction')
     try:
         data = request.get_json()
+        logger.debug(f'Request data: {data}')
         user_id = data.get('userId')
         book_id = data.get('bookId')
         transaction_type = data.get('transactionType')
@@ -41,19 +36,14 @@ def create_transaction():
             logger.warning(f'Invalid transactionType: {transaction_type}')
             return jsonify({'error': 'transactionType must be BORROW or PURCHASE'}), 400
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        db = get_db_connection()
         query = """
             INSERT INTO transactions (user_id, book_id, transaction_type)
             VALUES (%s, %s, %s)
         """
-        cursor.execute(query, (user_id, book_id, transaction_type))
-        conn.commit()
-
-        transaction_id = cursor.lastrowid
+        transaction_id = db.insert(query, (user_id, book_id, transaction_type))
         logger.info(f'Transaction created with ID: {transaction_id}')
-        cursor.close()
-        conn.close()
+        db.close()
 
         return jsonify({
             'id': transaction_id,
@@ -63,9 +53,6 @@ def create_transaction():
             'message': 'Transaction created'
         }), 201
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while creating transaction: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while creating transaction: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
@@ -75,58 +62,44 @@ def create_transaction():
 def get_all_transactions():
     logger.info('Received GET request to fetch all transactions')
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM transactions')
-        transactions = cursor.fetchall()
+        db = get_db_connection()
+        transactions = db.select('SELECT * FROM transactions')
         logger.info(f'Fetched {len(transactions)} transactions')
-        cursor.close()
-        conn.close()
+        db.close()
 
-        # Map user_id to userId and book_id to bookId
         for transaction in transactions:
             transaction['userId'] = transaction.pop('user_id')
             transaction['bookId'] = transaction.pop('book_id')
             transaction['transactionType'] = transaction.pop('transaction_type')
-            transaction['transactionDate'] = transaction.pop('transaction_date').isoformat()
+            transaction['transactionDate'] = transaction['transaction_date'].isoformat()
 
         return jsonify(transactions), 200
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while fetching transactions: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while fetching transactions: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Get transaction by id
+# Get a transaction by ID
 @app.route('/transactions/<int:id>', methods=['GET'])
 def get_transaction(id):
     logger.info(f'Received GET request to fetch transaction with ID: {id}')
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM transactions WHERE id = %s', (id,))
-        transaction = cursor.fetchone()
-        cursor.close()
-        conn.close()
+        db = get_db_connection()
+        transaction = db.select_one('SELECT * FROM transactions WHERE id = %s', (id,))
+        db.close()
 
         if not transaction:
             logger.warning(f'Transaction with ID {id} not found')
             return jsonify({'error': 'Transaction not found'}), 404
 
-        # Map fields
         transaction['userId'] = transaction.pop('user_id')
         transaction['bookId'] = transaction.pop('book_id')
         transaction['transactionType'] = transaction.pop('transaction_type')
-        transaction['transactionDate'] = transaction.pop('transaction_date').isoformat()
+        transaction['transactionDate'] = transaction['transaction_date'].isoformat()
 
         logger.info(f'Transaction with ID {id} fetched successfully')
         return jsonify(transaction), 200
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while fetching transaction {id}: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while fetching transaction {id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
@@ -136,30 +109,23 @@ def get_transaction(id):
 def get_transactions_by_user(user_id):
     logger.info(f'Received GET request to fetch transactions for user ID: {user_id}')
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute('SELECT * FROM transactions WHERE user_id = %s', (user_id,))
-        transactions = cursor.fetchall()
-        cursor.close()
-        conn.close()
+        db = get_db_connection()
+        transactions = db.select('SELECT * FROM transactions WHERE user_id = %s', (user_id,))
+        db.close()
 
         if not transactions:
             logger.info(f'No transactions found for user ID: {user_id}')
             return jsonify([]), 200
 
-        # Map fields
         for transaction in transactions:
             transaction['userId'] = transaction.pop('user_id')
             transaction['bookId'] = transaction.pop('book_id')
             transaction['transactionType'] = transaction.pop('transaction_type')
-            transaction['transactionDate'] = transaction.pop('transaction_date').isoformat()
+            transaction['transactionDate'] = transaction['transaction_date'].isoformat()
 
         logger.info(f'Fetched {len(transactions)} transactions for user ID: {user_id}')
         return jsonify(transactions), 200
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while fetching transactions for user {user_id}: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while fetching transactions for user {user_id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
@@ -171,7 +137,6 @@ def update_transaction(id):
     try:
         data = request.get_json()
         logger.debug(f'Request data: {data}')
-
         user_id = data.get('userId')
         book_id = data.get('bookId')
         transaction_type = data.get('transactionType')
@@ -184,30 +149,23 @@ def update_transaction(id):
             logger.warning(f'Invalid transactionType: {transaction_type}')
             return jsonify({'error': 'transactionType must be BORROW or PURCHASE'}), 400
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        db = get_db_connection()
         query = """
             UPDATE transactions
             SET user_id = %s, book_id = %s, transaction_type = %s
             WHERE id = %s
         """
-        cursor.execute(query, (user_id, book_id, transaction_type, id))
-        conn.commit()
+        row_count = db.update(query, (user_id, book_id, transaction_type, id))
 
-        if cursor.rowcount == 0:
-            cursor.close()
-            conn.close()
+        if row_count == 0:
+            db.close()
             logger.warning(f'Transaction with ID {id} not found for update')
             return jsonify({'error': 'Transaction not found'}), 404
 
-        cursor.close()
-        conn.close()
+        db.close()
         logger.info(f'Transaction with ID {id} updated successfully')
         return jsonify({'message': 'Transaction updated'}), 200
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while updating transaction {id}: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while updating transaction {id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
@@ -217,25 +175,18 @@ def update_transaction(id):
 def delete_transaction(id):
     logger.info(f'Received DELETE request to delete transaction with ID: {id}')
     try:
-        conn = get_db_connection()
-        cursor = conn.cursor()
-        cursor.execute('DELETE FROM transactions WHERE id = %s', (id,))
-        conn.commit()
+        db = get_db_connection()
+        row_count = db.delete('DELETE FROM transactions WHERE id = %s', (id,))
 
-        if cursor.rowcount == 0:
-            cursor.close()
-            conn.close()
+        if row_count == 0:
+            db.close()
             logger.warning(f'Transaction with ID {id} not found for deletion')
             return jsonify({'error': 'Transaction not found'}), 404
 
-        cursor.close()
-        conn.close()
-
+        db.close()
+        logger.info(f'Transaction with ID {id} deleted successfully')
         return jsonify({'message': 'Transaction deleted'}), 200
 
-    except mysql.connector.Error as err:
-        logger.error(f'Database error while deleting transaction {id}: {str(err)}')
-        return jsonify({'error': f'Database error: {str(err)}'}), 500
     except Exception as e:
         logger.error(f'Server error while deleting transaction {id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500

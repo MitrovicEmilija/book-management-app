@@ -28,3 +28,105 @@
 2025-04-03 09:59:12,007 [INFO] 127.0.0.1 - - [03/Apr/2025 09:59:12] "[33mDELETE /transactions/7 HTTP/1.1[0m" 404 -
 2025-04-03 09:59:16,937 [INFO] Received DELETE request to delete transaction with ID: 8
 2025-04-03 09:59:16,948 [INFO] 127.0.0.1 - - [03/Apr/2025 09:59:16] "DELETE /transactions/8 HTTP/1.1" 200 -
+2025-04-03 10:02:58,924 [INFO] Received POST request to create a transaction
+2025-04-03 10:02:58,925 [WARNING] Invalid transactionType: INVALID
+2025-04-03 10:02:58,926 [INFO] Received POST request to create a transaction
+2025-04-03 10:02:58,926 [WARNING] Missing required fields in request
+2025-04-03 10:02:58,927 [INFO] Received POST request to create a transaction
+2025-04-03 10:02:58,988 [ERROR] Database error while creating transaction: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`transactions`.`transactions`, CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `bookmanagement`.`user` (`id`))
+2025-04-03 10:02:58,991 [INFO] Received DELETE request to delete transaction with ID: 999
+2025-04-03 10:02:59,000 [WARNING] Transaction with ID 999 not found for deletion
+2025-04-03 10:02:59,001 [INFO] Received DELETE request to delete transaction with ID: 1
+2025-04-03 10:02:59,017 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:02:59,028 [INFO] Fetched 4 transactions
+2025-04-03 10:02:59,030 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:02:59,038 [INFO] Fetched 4 transactions
+2025-04-03 10:02:59,039 [INFO] Received GET request to fetch transaction with ID: 999
+2025-04-03 10:02:59,046 [WARNING] Transaction with ID 999 not found
+2025-04-03 10:02:59,047 [INFO] Received GET request to fetch transaction with ID: 1
+2025-04-03 10:02:59,058 [WARNING] Transaction with ID 1 not found
+2025-04-03 10:02:59,060 [INFO] Received GET request to fetch transactions for user ID: 999
+2025-04-03 10:02:59,070 [INFO] No transactions found for user ID: 999
+2025-04-03 10:02:59,071 [INFO] Received GET request to fetch transactions for user ID: 123
+2025-04-03 10:02:59,078 [INFO] No transactions found for user ID: 123
+2025-04-03 10:02:59,080 [INFO] Received PUT request to update transaction with ID: 999
+2025-04-03 10:02:59,086 [WARNING] Transaction with ID 999 not found for update
+2025-04-03 10:02:59,088 [INFO] Received PUT request to update transaction with ID: 1
+2025-04-03 10:02:59,097 [WARNING] Transaction with ID 1 not found for update
+2025-04-03 10:16:38,857 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:16:38,956 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://10.112.1.250:6000
+2025-04-03 10:16:38,956 [INFO] [33mPress CTRL+C to quit[0m
+2025-04-03 10:16:38,957 [INFO]  * Restarting with stat
+2025-04-03 10:16:39,176 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:16:39,217 [WARNING]  * Debugger is active!
+2025-04-03 10:16:39,229 [INFO]  * Debugger PIN: 558-988-839
+2025-04-03 10:16:50,209 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:16:50,324 [ERROR] Database error while fetching transactions: 1045 (28000): Access denied for user 'root'@'localhost' (using password: NO)
+2025-04-03 10:16:50,326 [INFO] 127.0.0.1 - - [03/Apr/2025 10:16:50] "[35m[1mGET /transactions HTTP/1.1[0m" 500 -
+2025-04-03 10:26:00,349 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:26:00,446 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://10.112.1.250:6000
+2025-04-03 10:26:00,446 [INFO] [33mPress CTRL+C to quit[0m
+2025-04-03 10:26:00,447 [INFO]  * Restarting with stat
+2025-04-03 10:26:00,703 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:26:00,743 [WARNING]  * Debugger is active!
+2025-04-03 10:26:00,755 [INFO]  * Debugger PIN: 558-988-839
+2025-04-03 10:26:06,690 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:26:06,781 [INFO] Fetched 4 transactions
+2025-04-03 10:26:06,783 [INFO] 127.0.0.1 - - [03/Apr/2025 10:26:06] "GET /transactions HTTP/1.1" 200 -
+2025-04-03 10:30:25,805 [INFO] Received POST request to create a transaction
+2025-04-03 10:30:25,806 [WARNING] Invalid transactionType: INVALID
+2025-04-03 10:30:25,808 [INFO] Received POST request to create a transaction
+2025-04-03 10:30:25,809 [WARNING] Missing required fields in request
+2025-04-03 10:30:25,812 [INFO] Received POST request to create a transaction
+2025-04-03 10:30:25,812 [INFO] Transaction created with ID: 1
+2025-04-03 10:30:25,816 [INFO] Received DELETE request to delete transaction with ID: 999
+2025-04-03 10:30:25,817 [WARNING] Transaction with ID 999 not found for deletion
+2025-04-03 10:30:25,820 [INFO] Received DELETE request to delete transaction with ID: 1
+2025-04-03 10:30:25,821 [INFO] Transaction with ID 1 deleted successfully
+2025-04-03 10:30:25,822 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:30:25,823 [INFO] Fetched 0 transactions
+2025-04-03 10:30:25,825 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:30:25,825 [INFO] Fetched 1 transactions
+2025-04-03 10:30:25,828 [INFO] Received GET request to fetch transaction with ID: 999
+2025-04-03 10:30:25,829 [WARNING] Transaction with ID 999 not found
+2025-04-03 10:30:25,831 [INFO] Received GET request to fetch transaction with ID: 1
+2025-04-03 10:30:25,832 [INFO] Transaction with ID 1 fetched successfully
+2025-04-03 10:30:25,833 [INFO] Received GET request to fetch transactions for user ID: 999
+2025-04-03 10:30:25,834 [INFO] No transactions found for user ID: 999
+2025-04-03 10:30:25,836 [INFO] Received GET request to fetch transactions for user ID: 123
+2025-04-03 10:30:25,836 [INFO] Fetched 2 transactions for user ID: 123
+2025-04-03 10:30:25,838 [INFO] Received PUT request to update transaction with ID: 999
+2025-04-03 10:30:25,839 [WARNING] Transaction with ID 999 not found for update
+2025-04-03 10:30:25,841 [INFO] Received PUT request to update transaction with ID: 1
+2025-04-03 10:30:25,842 [INFO] Transaction with ID 1 updated successfully
+2025-04-03 10:30:44,380 [INFO] Starting transactions-service on port 5000
+2025-04-03 10:30:44,470 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://10.112.1.250:6000
+2025-04-03 10:30:44,471 [INFO] [33mPress CTRL+C to quit[0m
+2025-04-03 10:30:44,472 [INFO]  * Restarting with stat
+2025-04-03 10:30:44,709 [INFO] Starting transactions-service on port 5000
+2025-04-03 10:30:44,764 [WARNING]  * Debugger is active!
+2025-04-03 10:30:44,778 [INFO]  * Debugger PIN: 558-988-839
+2025-04-03 10:30:49,300 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:30:49,379 [INFO] Successfully connected to the database
+2025-04-03 10:30:49,380 [INFO] Fetched 4 transactions
+2025-04-03 10:30:49,380 [INFO] Database connection closed
+2025-04-03 10:30:49,381 [INFO] 127.0.0.1 - - [03/Apr/2025 10:30:49] "GET /transactions HTTP/1.1" 200 -
+2025-04-03 10:32:36,614 [INFO]  * Detected change in '/Users/emilia/Documents/IPT_magisterij/2-semester/ITA/vaje/book-management-app/services/transaction-service/app.py', reloading
+2025-04-03 10:32:36,661 [INFO]  * Restarting with stat
+2025-04-03 10:32:37,071 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:32:37,119 [WARNING]  * Debugger is active!
+2025-04-03 10:32:37,129 [INFO]  * Debugger PIN: 558-988-839
+2025-04-03 10:32:46,510 [INFO] Received POST request to create a transaction
+2025-04-03 10:32:46,541 [INFO] Successfully connected to the database
+2025-04-03 10:32:46,550 [INFO] Transaction created with ID: 10
+2025-04-03 10:32:46,551 [INFO] Database connection closed
+2025-04-03 10:32:46,553 [INFO] 127.0.0.1 - - [03/Apr/2025 10:32:46] "[35m[1mPOST /transactions HTTP/1.1[0m" 201 -
