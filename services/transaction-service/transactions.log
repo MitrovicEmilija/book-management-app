@@ -130,3 +130,44 @@
 2025-04-03 10:32:46,550 [INFO] Transaction created with ID: 10
 2025-04-03 10:32:46,551 [INFO] Database connection closed
 2025-04-03 10:32:46,553 [INFO] 127.0.0.1 - - [03/Apr/2025 10:32:46] "[35m[1mPOST /transactions HTTP/1.1[0m" 201 -
+2025-04-03 10:54:26,676 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:54:26,791 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:6000
+ * Running on http://10.112.1.250:6000
+2025-04-03 10:54:26,792 [INFO] [33mPress CTRL+C to quit[0m
+2025-04-03 10:54:26,793 [INFO]  * Restarting with stat
+2025-04-03 10:54:27,042 [INFO] Starting transactions-service on port 6000
+2025-04-03 10:54:27,078 [WARNING]  * Debugger is active!
+2025-04-03 10:54:27,091 [INFO]  * Debugger PIN: 369-538-922
+2025-04-03 10:54:32,523 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:54:32,591 [INFO] Successfully connected to the database
+2025-04-03 10:54:32,596 [INFO] Fetched 5 transactions
+2025-04-03 10:54:32,597 [INFO] Database connection closed
+2025-04-03 10:54:32,598 [INFO] 127.0.0.1 - - [03/Apr/2025 10:54:32] "GET /transactions HTTP/1.1" 200 -
+2025-04-03 10:54:44,651 [INFO] Received POST request to create a transaction
+2025-04-03 10:54:44,651 [WARNING] Invalid transactionType: INVALID
+2025-04-03 10:54:44,654 [INFO] Received POST request to create a transaction
+2025-04-03 10:54:44,655 [WARNING] Missing required fields in request
+2025-04-03 10:54:44,658 [INFO] Received POST request to create a transaction
+2025-04-03 10:54:44,659 [INFO] Transaction created with ID: 1
+2025-04-03 10:54:44,663 [INFO] Received DELETE request to delete transaction with ID: 999
+2025-04-03 10:54:44,664 [WARNING] Transaction with ID 999 not found for deletion
+2025-04-03 10:54:44,666 [INFO] Received DELETE request to delete transaction with ID: 1
+2025-04-03 10:54:44,667 [INFO] Transaction with ID 1 deleted successfully
+2025-04-03 10:54:44,669 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:54:44,670 [INFO] Fetched 0 transactions
+2025-04-03 10:54:44,673 [INFO] Received GET request to fetch all transactions
+2025-04-03 10:54:44,674 [INFO] Fetched 1 transactions
+2025-04-03 10:54:44,680 [INFO] Received GET request to fetch transaction with ID: 999
+2025-04-03 10:54:44,680 [WARNING] Transaction with ID 999 not found
+2025-04-03 10:54:44,682 [INFO] Received GET request to fetch transaction with ID: 1
+2025-04-03 10:54:44,683 [INFO] Transaction with ID 1 fetched successfully
+2025-04-03 10:54:44,685 [INFO] Received GET request to fetch transactions for user ID: 999
+2025-04-03 10:54:44,687 [INFO] No transactions found for user ID: 999
+2025-04-03 10:54:44,689 [INFO] Received GET request to fetch transactions for user ID: 123
+2025-04-03 10:54:44,690 [INFO] Fetched 2 transactions for user ID: 123
+2025-04-03 10:54:44,692 [INFO] Received PUT request to update transaction with ID: 999
+2025-04-03 10:54:44,692 [WARNING] Transaction with ID 999 not found for update
+2025-04-03 10:54:44,694 [INFO] Received PUT request to update transaction with ID: 1
+2025-04-03 10:54:44,695 [INFO] Transaction with ID 1 updated successfully
