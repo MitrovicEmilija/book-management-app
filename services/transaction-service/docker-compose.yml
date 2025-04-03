@@ -1,0 +1,24 @@
+services:
+  transaction-service-ita:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transaction-service-ita
+    restart: always
+    environment:
+      MYSQL_HOST: book-service-db-ita
+      MYSQL_USER: springstudent
+      MYSQL_PASSWORD: springstudent
+      MYSQL_DB: Transactions
+    ports:
+      - "6000:6000"
+    networks:
+      - book-service-network
+    depends_on:
+      book-service-db-ita:
+        condition: service_healthy
+
+networks:
+  book-service-network:
+    external: true
+    name: book-service-network
