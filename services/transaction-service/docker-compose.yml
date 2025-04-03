@@ -1,4 +1,25 @@
 services:
+  mysql:
+    image: mysql:8.0.32
+    container_name: transaction-service-db-ita
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Emce142107
+      MYSQL_DATABASE: Transactions
+      MYSQL_USER: springstudent
+      MYSQL_PASSWORD: springstudent
+    ports:
+      - "3310:3306" # Different port from book-service to avoid conflicts
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - transaction-service-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   transaction-service-ita:
     build:
       context: .
@@ -6,19 +27,21 @@ services:
     container_name: transaction-service-ita
     restart: always
     environment:
-      MYSQL_HOST: book-service-db-ita
+      MYSQL_HOST: transaction-service-db-ita
       MYSQL_USER: springstudent
       MYSQL_PASSWORD: springstudent
       MYSQL_DB: Transactions
     ports:
       - "6000:6000"
     networks:
-      - book-service-network
+      - transaction-service-network
     depends_on:
-      book-service-db-ita:
+      mysql:
         condition: service_healthy
 
+volumes:
+  mysql-data:
+
 networks:
-  book-service-network:
-    external: true
-    name: book-service-network
+  transaction-service-network:
+    driver: bridge
