@@ -3,15 +3,19 @@ name: Transaction Service Unit Tests
 on:
   push:
     branches:
-      - main  
+      - main
     paths:
-      - '**.py' 
-      - 'services/transaction-service/requirements.txt' 
-      - '.github/workflows/transaction-service.yml' 
+      - 'services/transaction-service/**.py'  
+      - 'services/transaction-service/requirements.txt'  
+      - '.github/workflows/transaction-service.yml'  
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/transaction-service  # Set the working directory for all run steps
 
     steps:
       # Step 1: Checkout the repository code
