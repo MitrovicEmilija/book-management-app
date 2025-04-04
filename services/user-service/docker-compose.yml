@@ -1,4 +1,21 @@
 services:
+  activemq:
+    image: rmohr/activemq:latest
+    container_name: user-service-activemq-ita
+    ports:
+      - "61616:61616"  # JMS port
+      - "8161:8161"    # Web Console port
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    networks:
+      - user-service-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   mysql:
     image: mysql:8.0.32
     container_name: user-service-db-ita
@@ -31,12 +48,17 @@ services:
       SPRING_DATASOURCE_USERNAME: springstudent
       SPRING_DATASOURCE_PASSWORD: springstudent
       SERVER_PORT: 8080
+      SPRING_ACTIVEMQ_BROKER_URL: tcp://user-service-activemq-ita:61616
+      SPRING_ACTIVEMQ_USER: admin
+      SPRING_ACTIVEMQ_PASSWORD: admin
     ports:
       - "8081:8080"
     networks:
       - user-service-network
     depends_on:
       mysql:
+        condition: service_healthy
+      activemq:
         condition: service_healthy
 
 volumes:

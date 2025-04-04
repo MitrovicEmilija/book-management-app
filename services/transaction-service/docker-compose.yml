@@ -1,4 +1,21 @@
 services:
+  activemq:
+    image: rmohr/activemq:latest
+    container_name: transaction-service-activemq-ita
+    ports:
+      - "61618:61616"  # Different external port
+      - "8163:8161"    # Different web console port
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    networks:
+      - transaction-service-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   mysql:
     image: mysql:8.0.32
     container_name: transaction-service-db-ita
@@ -31,6 +48,9 @@ services:
       MYSQL_USER: springstudent
       MYSQL_PASSWORD: springstudent
       MYSQL_DB: Transactions
+      ACTIVEMQ_BROKER_URL: tcp://transaction-service-activemq-ita:61616
+      ACTIVEMQ_USERNAME: admin
+      ACTIVEMQ_PASSWORD: admin
     ports:
       - "6000:6000"
     networks:
