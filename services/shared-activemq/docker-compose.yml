@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  activemq:
+    image: rmohr/activemq:latest
+    container_name: shared-activemq
+    ports:
+      - "61616:61616" # JMS port
+      - "8161:8161"   # Web console
+    environment:
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: admin
+    networks:
+      - shared-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8161"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  shared-network:
+    driver: bridge
