@@ -3,15 +3,20 @@ const express = require('express');
 const app = express();
 
 // Load environment variables
-const brokerUrl = process.env.ACTIVEMQ_BROKER_URL;
-const username = process.env.ACTIVEMQ_USERNAME;
-const password = process.env.ACTIVEMQ_PASSWORD;
+const brokerUrl = process.env.ACTIVEMQ_BROKER_URL || 'tcp://shared-activemq:61616'; 
+const username = process.env.ACTIVEMQ_USERNAME || 'admin';
+const password = process.env.ACTIVEMQ_PASSWORD || 'admin';
 const port = process.env.PORT || 50051;
+
+// Parse brokerUrl to extract host and port
+const url = new URL(brokerUrl.replace('tcp://', 'http://')); 
+const brokerHost = url.hostname;
+const brokerPort = parseInt(url.port) || 61616;
 
 // Configure connection to ActiveMQ
 const connectOptions = {
-    host: 'book-service-activemq-ita', // Matches container name in Docker Compose
-    port: 61616,
+    host: brokerHost, 
+    port: brokerPort, 
     connectHeaders: {
         'host': '/',
         'login': username,
@@ -56,10 +61,16 @@ function subscribeToQueue(queueName) {
                 message.ack(); // Acknowledge the message
             });
         });
+        // Note: Client is not disconnected here to keep subscription active
     });
 }
 
-// Example Express route
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.status(200).send('Server is up');
+});
+
+// Express route
 app.get('/send', (req, res) => {
     sendMessage('book-queue', 'New book added!');
     res.send('Message sent to queue');

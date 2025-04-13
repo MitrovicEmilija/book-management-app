@@ -1,21 +1,5 @@
+version: '3.8'
 services:
-  activemq:
-    image: rmohr/activemq:latest
-    container_name: transaction-service-activemq-ita
-    ports:
-      - "61618:61616"  # Different external port
-      - "8163:8161"    # Different web console port
-    environment:
-      ACTIVEMQ_ADMIN_LOGIN: admin
-      ACTIVEMQ_ADMIN_PASSWORD: admin
-    networks:
-      - transaction-service-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   mysql:
     image: mysql:8.0.32
     container_name: transaction-service-db-ita
@@ -26,11 +10,12 @@ services:
       MYSQL_USER: springstudent
       MYSQL_PASSWORD: springstudent
     ports:
-      - "3310:3306" # Different port from book-service to avoid conflicts
+      - "3310:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - transaction-service-network
+      - shared-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -48,13 +33,16 @@ services:
       MYSQL_USER: springstudent
       MYSQL_PASSWORD: springstudent
       MYSQL_DB: Transactions
-      ACTIVEMQ_BROKER_URL: tcp://transaction-service-activemq-ita:61616
+      ACTIVEMQ_BROKER: 172.25.0.2 # Update to shared ActiveMQ hostname
+      ACTIVEMQ_BROKER_URL: tcp://172.25.0.2:61616
       ACTIVEMQ_USERNAME: admin
       ACTIVEMQ_PASSWORD: admin
+      PORT: 6000
     ports:
       - "6000:6000"
     networks:
       - transaction-service-network
+      - shared-network
     depends_on:
       mysql:
         condition: service_healthy
@@ -65,3 +53,5 @@ volumes:
 networks:
   transaction-service-network:
     driver: bridge
+  shared-network:
+    external: true

@@ -3,10 +3,11 @@ import stomp
 import time
 
 # Load environment variables
-broker_host = os.getenv('ACTIVEMQ_BROKER')  # Use container name
-broker_port = 61616
-username = os.getenv('ACTIVEMQ_USERNAME')
-password = os.getenv('ACTIVEMQ_PASSWORD')
+broker_url = os.getenv('ACTIVEMQ_BROKER_URL', 'tcp://shared-activemq:61616')  # Fallback to shared-activemq
+broker_host = os.getenv('ACTIVEMQ_BROKER', 'shared-activemq')  # Container name
+broker_port = int(os.getenv('ACTIVEMQ_BROKER_PORT', '61616'))  # Default port
+username = os.getenv('ACTIVEMQ_USERNAME', 'admin')
+password = os.getenv('ACTIVEMQ_PASSWORD', 'admin')
 port = int(os.getenv('PORT', '6000'))
 
 # Connection configuration
@@ -43,10 +44,10 @@ if __name__ == "__main__":
     # Example usage
     send_message('transaction-queue', 'New transaction processed!')
 
-    # Start listening in a separate thread or process if needed
+    # Start listening in a separate thread
     import threading
     listener_thread = threading.Thread(target=subscribe_to_queue, args=('transaction-queue',))
     listener_thread.start()
 
-    # Your main application logic here
+    # Main application logic
     print(f"Transaction service running on port {port}")

@@ -1,21 +1,5 @@
+version: '3.8'
 services:
-  activemq:
-    image: rmohr/activemq:latest
-    container_name: user-service-activemq-ita
-    ports:
-      - "61616:61616"  # JMS port
-      - "8161:8161"    # Web Console port
-    environment:
-      ACTIVEMQ_ADMIN_LOGIN: admin
-      ACTIVEMQ_ADMIN_PASSWORD: admin
-    networks:
-      - user-service-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   mysql:
     image: mysql:8.0.32
     container_name: user-service-db-ita
@@ -31,6 +15,7 @@ services:
       - mysql-data:/var/lib/mysql
     networks:
       - user-service-network
+      - shared-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -48,17 +33,16 @@ services:
       SPRING_DATASOURCE_USERNAME: springstudent
       SPRING_DATASOURCE_PASSWORD: springstudent
       SERVER_PORT: 8080
-      SPRING_ACTIVEMQ_BROKER_URL: tcp://user-service-activemq-ita:61616
+      SPRING_ACTIVEMQ_BROKER_URL: tcp://shared-activemq:61616 # Point to shared ActiveMQ
       SPRING_ACTIVEMQ_USER: admin
       SPRING_ACTIVEMQ_PASSWORD: admin
     ports:
       - "8081:8080"
     networks:
       - user-service-network
+      - shared-network
     depends_on:
       mysql:
-        condition: service_healthy
-      activemq:
         condition: service_healthy
 
 volumes:
@@ -67,3 +51,5 @@ volumes:
 networks:
   user-service-network:
     driver: bridge
+  shared-network:
+    external: true

@@ -1,21 +1,5 @@
+version: '3.8'
 services:
-  activemq:
-    image: rmohr/activemq:latest
-    container_name: book-service-activemq-ita
-    ports:
-      - "61617:61616" # Different external port to avoid conflicts
-      - "8162:8161" # Different web console port
-    environment:
-      ACTIVEMQ_ADMIN_LOGIN: admin
-      ACTIVEMQ_ADMIN_PASSWORD: admin
-    networks:
-      - book-service-network
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8161" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   mysql:
     image: mysql:8.0.32
     container_name: book-service-db-ita
@@ -26,13 +10,14 @@ services:
       MYSQL_USER: springstudent
       MYSQL_PASSWORD: springstudent
     ports:
-      - "3309:3306" # Different port from user-service to avoid conflicts
+      - "3309:3306"
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
       - book-service-network
+      - shared-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,23 +34,23 @@ services:
       DB_PASSWORD: springstudent
       DB_NAME: Books
       PORT: 50051
-      ACTIVEMQ_BROKER_URL: tcp://book-service-activemq-ita:61616
+      ACTIVEMQ_BROKER_URL: tcp://shared-activemq:61616 
       ACTIVEMQ_USERNAME: admin
       ACTIVEMQ_PASSWORD: admin
     ports:
       - "50051:50051"
     networks:
       - book-service-network
+      - shared-network
     depends_on:
       mysql:
-        condition: service_healthy
-      activemq:
         condition: service_healthy
 
 volumes:
   mysql-data:
 
-
 networks:
   book-service-network:
     driver: bridge
+  shared-network:
+    external: true
