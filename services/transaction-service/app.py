@@ -1,5 +1,5 @@
 import logging
-
+import os
 from flask import Flask, request, jsonify
 
 from db import get_db_connection
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Create a new transaction
+# Create a new transaction (unprotected)
 @app.route('/transactions', methods=['POST'])
 def create_transaction():
     logger.info('Received POST request to create a transaction')
@@ -57,7 +57,7 @@ def create_transaction():
         logger.error(f'Server error while creating transaction: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Get all transactions
+# Get all transactions (unprotected)
 @app.route('/transactions', methods=['GET'])
 def get_all_transactions():
     logger.info('Received GET request to fetch all transactions')
@@ -79,7 +79,7 @@ def get_all_transactions():
         logger.error(f'Server error while fetching transactions: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Get a transaction by ID
+# Get a transaction by ID (unprotected)
 @app.route('/transactions/<int:id>', methods=['GET'])
 def get_transaction(id):
     logger.info(f'Received GET request to fetch transaction with ID: {id}')
@@ -104,7 +104,7 @@ def get_transaction(id):
         logger.error(f'Server error while fetching transaction {id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Get transactions by user ID
+# Get transactions by user ID (unprotected)
 @app.route('/transactions/user/<int:user_id>', methods=['GET'])
 def get_transactions_by_user(user_id):
     logger.info(f'Received GET request to fetch transactions for user ID: {user_id}')
@@ -130,7 +130,7 @@ def get_transactions_by_user(user_id):
         logger.error(f'Server error while fetching transactions for user {user_id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Update a transaction
+# Update a transaction (unprotected)
 @app.route('/transactions/<int:id>', methods=['PUT'])
 def update_transaction(id):
     logger.info(f'Received PUT request to update transaction with ID: {id}')
@@ -170,7 +170,7 @@ def update_transaction(id):
         logger.error(f'Server error while updating transaction {id}: {str(e)}')
         return jsonify({'error': f'Server error: {str(e)}'}), 500
 
-# Delete a transaction
+# Delete a transaction (unprotected)
 @app.route('/transactions/<int:id>', methods=['DELETE'])
 def delete_transaction(id):
     logger.info(f'Received DELETE request to delete transaction with ID: {id}')

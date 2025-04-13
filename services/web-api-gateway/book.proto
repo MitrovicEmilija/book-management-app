@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package book;
+
+service BookService {
+    rpc GetAllBooks (Empty) returns (BookList) {};
+    rpc GetBook (BookId) returns (Book) {};
+    rpc GetBooksByUser (BookUserId) returns (BookList) {};
+    rpc CreateBook (BookRequest) returns (Book) {};
+    rpc UpdateBook (Book) returns (Status) {};
+    rpc DeleteBook (BookId) returns (Status) {};
+}
+
+message Empty {}
+
+message BookId {
+    int32 id = 1;
+}
+
+message BookUserId {
+    int64 userId = 1;
+}
+
+message BookRequest {
+    string title = 1;
+    string author = 2;
+    string isbn = 3;
+    int64 userId = 4;
+}
+
+message Book {
+    int32 id = 1;
+    string title = 2;
+    string author = 3;
+    string isbn = 4;
+    string created_at = 5;
+    int64 userId = 6;
+}
+
+message BookList {
+    repeated Book books = 1;
+}
+
+message Status {
+    string message = 1;
+}

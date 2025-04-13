@@ -37,6 +37,7 @@ services:
       ACTIVEMQ_BROKER_URL: tcp://172.25.0.2:61616
       ACTIVEMQ_USERNAME: admin
       ACTIVEMQ_PASSWORD: admin
+      JWT_SECRET: GD01pc7/7BmRWmWtY71dIUjR1G+we3N5d9EKYWmzuFI6o6eRCsetl/9KruFclnFwmb7B9I62hhDfjUAl3IUDUw==
       PORT: 6000
     ports:
       - "6000:6000"
