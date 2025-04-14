@@ -230,6 +230,7 @@ async def get_transactions(page: int = 1, limit: int = 10):
                 params={"page": page, "limit": limit}
             )
             response.raise_for_status()
+            #send_book_purchase_event(str(request.userId), request.bookId, request.transactionType)
             return response.json()
         except httpx.HTTPStatusError as e:
             logger.error(f"Error fetching transactions: status={e.response.status_code}, response={e.response.text}")

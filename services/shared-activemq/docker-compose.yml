@@ -9,6 +9,7 @@ services:
     environment:
       ACTIVEMQ_ADMIN_LOGIN: admin
       ACTIVEMQ_ADMIN_PASSWORD: admin
+      ACTIVEMQ_CONFIG_transports_default_connectors_stomp: "stomp://0.0.0.0:61616"
     networks:
       - shared-network
     healthcheck:
