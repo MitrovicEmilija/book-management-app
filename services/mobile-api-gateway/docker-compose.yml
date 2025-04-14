@@ -1,19 +1,21 @@
-version: '3.8'
-
 services:
   mobile-api-gateway:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: mobile-api-gateway
+    restart: always
+    environment:
+      USER_SERVICE_URL: http://user-service-ita:8080
+      TRANSACTION_SERVICE_URL: http://transaction-service-ita:6000
+      BOOK_SERVICE_URL: book-service-ita:50051
+      JWT_SECRET: GD01pc7/7BmRWmWtY71dIUjR1G+we3N5d9EKYWmzuFI6o6eRCsetl/9KruFclnFwmb7B9I62hhDfjUAl3IUDUw==
+      PORT: 4000
     ports:
       - "4000:4000"
-    environment:
-      - USER_SERVICE_URL=http://user-service-ita:8080
-      - TRANSACTION_SERVICE_URL=http://transaction-service-ita:6000
-      - BOOK_SERVICE_URL=book-service-ita:50051
-      - JWT_SECRET=GD01pc7/7BmRWmWtY71dIUjR1G+we3N5d9EKYWmzuFI6o6eRCsetl/9KruFclnFwmb7B9I62hhDfjUAl3IUDUw==
     networks:
-      - book-management-network
+      - shared-network
 
 networks:
-  book-management-network:
+  shared-network:
     external: true
