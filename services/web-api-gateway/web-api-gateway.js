@@ -196,6 +196,40 @@ app.post('/api/web/transactions', async (req, res) => {
   }
 });
 
+// Get dashboard data (protected)
+app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
+  const userId = req.params.userId;
+  logger.info('Fetching dashboard data', { userId });
+  try {
+    // Fetch user details
+    const userResponse = await axios.get(`${USER_SERVICE_URL}/users/${userId}`);
+    const user = userResponse.data;
+
+    // Fetch user's books
+    const booksResponse = await new Promise((resolve, reject) => {
+      bookClient.GetBooksByUser({ userId }, (error, response) => {
+        if (error) reject(error);
+        else resolve(response);
+      });
+    });
+
+    // Fetch user's transactions
+    const transactionsResponse = await axios.get(`${TRANSACTION_SERVICE_URL}/transactions/user/${userId}`);
+
+    const dashboardData = {
+      user: user || null,
+      books: booksResponse.books || [],
+      transactions: transactionsResponse.data || []
+    };
+
+    logger.info('Dashboard data fetched successfully', { userId });
+    res.json(dashboardData);
+  } catch (error) {
+    logger.error('Error fetching dashboard data', { userId, error: error.message });
+    res.status(error.response?.status || 500).json({ error: error.response?.data || 'Server error' });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   logger.info(`Web API Gateway running on port ${PORT}`);
