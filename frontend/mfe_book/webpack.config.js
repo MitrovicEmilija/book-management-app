@@ -7,7 +7,11 @@ module.exports = {
   mode: 'development',
   devServer: {
     port: 3002, 
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+    },
   },
   output: {
     publicPath: 'auto',
@@ -31,7 +35,7 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: 'book_mfe', 
+      name: 'mfe_book', 
       filename: 'remoteEntry.js',
       exposes: {
         './App': './src/App.jsx',

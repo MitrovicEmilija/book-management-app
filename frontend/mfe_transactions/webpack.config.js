@@ -6,8 +6,12 @@ module.exports = {
   entry: './src/index.js',
   mode: 'development',
   devServer: {
-    port: 3001, // 3001 for user-mfe, 3002 for book-mfe, 3003 for transaction-mfe
-    headers: { 'Access-Control-Allow-Origin': '*' },
+    port: 3003, // 3001 for user-mfe, 3002 for book-mfe, 3003 for transaction-mfe
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+    },
   },
   output: {
     publicPath: 'auto',
@@ -31,7 +35,7 @@ module.exports = {
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: 'user_mfe', // e.g., 'user_mfe', 'book_mfe', 'transaction_mfe'
+      name: 'mfe_transactions', 
       filename: 'remoteEntry.js',
       exposes: {
         './App': './src/App.jsx',
