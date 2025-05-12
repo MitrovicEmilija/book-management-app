@@ -1,5 +1,13 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App.jsx';
+import { createRoot } from 'react-dom/client';
+import TransactionApp from './App.jsx';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+if (process.env.NODE_ENV === 'development') {
+  const container = document.getElementById('root');
+  if (container) {
+    const root = createRoot(container);
+    root.render(<TransactionApp />);
+  } else {
+    console.error('No container found for rendering mfe-user');
+  }
+}

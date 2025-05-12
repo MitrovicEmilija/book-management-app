@@ -6,15 +6,25 @@ module.exports = {
   entry: './src/index.js',
   mode: 'development',
   devServer: {
-    port: 3001, // user-mfe runs on port 3001
+    port: 3001,
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
       'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
     },
+    historyApiFallback: true,
   },
   output: {
     publicPath: 'auto',
+    clean: true,
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+    modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
+    alias: {
+      'react': path.resolve(__dirname, 'node_modules/react'),
+      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+    },
   },
   module: {
     rules: [
@@ -22,14 +32,25 @@ module.exports = {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         exclude: /node_modules/,
-        options: { presets: ['@babel/preset-env', '@babel/preset-react'] },
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react'],
+          cacheDirectory: true,
+        },
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader', {
-          loader: 'postcss-loader',
-          options: { postcssOptions: { plugins: [require('tailwindcss'), require('autoprefixer')] } },
-        }],
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [require('tailwindcss'), require('autoprefixer')],
+              },
+            },
+          },
+        ],
       },
     ],
   },
@@ -38,16 +59,32 @@ module.exports = {
       name: 'mfe_user',
       filename: 'remoteEntry.js',
       exposes: {
-        './App': './src/App.jsx',
+        './App': './src/App.jsx', // Directly expose the component
       },
       shared: {
-        react: { singleton: true, eager: true },
-        'react-dom': { singleton: true, eager: true },
-        axios: { singleton: true, eager: true },
+        react: {
+          singleton: true,
+          eager: true,
+          requiredVersion: '^18.3.1',
+          import: 'react',
+        },
+        'react-dom': {
+          singleton: true,
+          eager: true,
+          requiredVersion: '^18.3.1',
+          import: 'react-dom/client',
+        },
+        axios: {
+          singleton: true,
+          eager: true,
+          requiredVersion: '^1.9.0',
+        },
       },
     }),
     new HtmlWebpackPlugin({
       template: './public/index.html',
     }),
   ],
+  devtool: 'source-map',
+  stats: 'verbose',
 };

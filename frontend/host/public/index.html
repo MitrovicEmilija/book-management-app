@@ -5,128 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Library Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react@17/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@17/umd/react-dom.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.8/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.24.0/babel.min.js"></script>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
 </head>
 <body>
   <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect, Suspense, lazy } = React;
 
-    // Lazy load microfrontends
-    const UserApp = lazy(() => import('mfe_user/App'));
-    const BookApp = lazy(() => import('mfe_book/App'));
-    const TransactionApp = lazy(() => import('mfe_transactions/App'));
-
-    const App = () => {
-      const [dashboardData, setDashboardData] = useState(null);
-      const [userId, setUserId] = useState('');
-      const [error, setError] = useState('');
-      const token = localStorage.getItem('token');
-
-      const fetchDashboardData = async () => {
-        if (!userId || !token) return;
-        try {
-          const response = await axios.get(`http://localhost:3000/api/web/dashboard/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setDashboardData(response.data);
-          setError('');
-        } catch (err) {
-          setError(err.response?.data?.error || 'Failed to fetch dashboard data');
-        }
-      };
-
-      useEffect(() => {
-        fetchDashboardData();
-      }, [userId, token]);
-
-      return (
-        <div className="min-h-screen bg-gray-100">
-          <header className="bg-blue-600 text-white p-4">
-            <h1 className="text-3xl font-bold">Library Dashboard</h1>
-          </header>
-          <main className="p-4">
-            <div className="mb-6">
-              <input
-                type="text"
-                placeholder="Enter User ID for Dashboard"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                className="p-2 border rounded mr-2"
-              />
-              <button
-                onClick={fetchDashboardData}
-                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-              >
-                Load Dashboard
-              </button>
-            </div>
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-            {dashboardData && (
-              <div className="mb-6 p-4 bg-white rounded shadow">
-                <h2 className="text-2xl font-bold mb-4">Dashboard</h2>
-                <div className="mb-4">
-                  <h3 className="text-xl">User</h3>
-                  {dashboardData.user ? (
-                    <p>{dashboardData.user.username} ({dashboardData.user.email})</p>
-                  ) : (
-                    <p>No user data</p>
-                  )}
-                </div>
-                <div className="mb-4">
-                  <h3 className="text-xl">Books</h3>
-                  {dashboardData.books.length > 0 ? (
-                    <ul className="list-disc pl-5">
-                      {dashboardData.books.map((book) => (
-                        <li key={book.id}>{book.title} by {book.author}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No books</p>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-xl">Transactions</h3>
-                  {dashboardData.transactions.length > 0 ? (
-                    <ul className="list-disc pl-5">
-                      {dashboardData.transactions.map((tx) => (
-                        <li key={tx.id}>
-                          {tx.transactionType} - Book ID: {tx.bookId} on {tx.transactionDate}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No transactions</p>
-                  )}
-                </div>
-              </div>
-            )}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              <Suspense fallback={<div>Loading User Service...</div>}>
-                <UserApp />
-              </Suspense>
-              <Suspense fallback={<div>Loading Book Service...</div>}>
-                <BookApp />
-              </Suspense>
-              <Suspense fallback={<div>Loading Transaction Service...</div>}>
-                <TransactionApp />
-              </Suspense>
-            </div>
-          </main>
-        </div>
-      );
-    };
-
-    ReactDOM.render(<App />, document.getElementById('root'));
-  </script>
   <script>
-    // Module Federation remotes
-    window.user_mfe = 'http://localhost:3001/remoteEntry.js';
-    window.book_mfe = 'http://localhost:3002/remoteEntry.js';
-    window.transaction_mfe = 'http://localhost:3003/remoteEntry.js';
+    window.mfe_user = '/mfe_user/remoteEntry.js';
+    window.mfe_book = '/mfe_book/remoteEntry.js';
+    window.mfe_transactions = '/mfe_transactions/remoteEntry.js';
   </script>
+
+  <script src="main.js"></script>
 </body>
+
 </html>

@@ -1,1 +1,3 @@
-import('./bootstrap');
+import('./bootstrap.js').then(bootstrap => {
+    bootstrap.default();
+});
