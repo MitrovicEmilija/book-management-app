@@ -3,88 +3,50 @@ const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPl
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
   mode: 'development',
-  devServer: {
-    port: 3003,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-    },
-    historyApiFallback: true,
-  },
+  entry: './src/index.jsx',
   output: {
-    publicPath: 'auto',
-    clean: true,
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: 'http://localhost:3004/',
   },
-  resolve: {
-    extensions: ['.js', '.jsx'],
-    modules: [path.resolve(__dirname, 'node_modules'), 'node_modules'],
-    alias: {
-      'react': path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-    },
+  devServer: {
+    port: 3004,
+    historyApiFallback: true,
   },
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
-        loader: 'babel-loader',
+        test: /\.(jsx|js)$/,
         exclude: /node_modules/,
-        options: {
-          presets: ['@babel/preset-env', '@babel/preset-react'],
-          cacheDirectory: true,
+        use: {
+          loader: 'babel-loader',
+          options: { presets: ['@babel/preset-react'] },
         },
       },
       {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [require('tailwindcss'), require('autoprefixer')],
-              },
-            },
-          },
-        ],
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader', 'postcss-loader'],
       },
     ],
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+    }),
     new ModuleFederationPlugin({
       name: 'mfe_transactions',
       filename: 'remoteEntry.js',
       exposes: {
-        './App': './src/App.jsx', // Directly expose the component
+        './App': './src/App.jsx',
       },
       shared: {
-        react: {
-          singleton: true,
-          eager: true,
-          requiredVersion: '^18.3.1',
-          import: 'react',
-        },
-        'react-dom': {
-          singleton: true,
-          eager: true,
-          requiredVersion: '^18.3.1',
-          import: 'react-dom/client',
-        },
-        axios: {
-          singleton: true,
-          eager: true,
-          requiredVersion: '^1.9.0',
-        },
+        react: { singleton: true, eager: true },
+        'react-dom': { singleton: true, eager: true },
+        'react-router-dom': { singleton: true, eager: true },
       },
     }),
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-    }),
   ],
-  devtool: 'source-map',
-  stats: 'verbose',
+  resolve: {
+    extensions: ['.jsx', '.js'],
+  },
 };

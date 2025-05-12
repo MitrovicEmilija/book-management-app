@@ -1,126 +1,145 @@
 import React, { useState } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const UserApp = () => {
+function Login() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('USER');
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [token, setToken] = useState(null);
-  const [error, setError] = useState('');
-
-  const API_URL = 'http://localhost:3000/api/web';
-
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${API_URL}/users/register`, { username, email, password, role });
-      alert(response.data.message);
-      setError('');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
-    }
-  };
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/users/login`, { username: loginUsername, password: loginPassword });
-      setToken(response.data.token);
+      const response = await axios.post('http://localhost:3000/api/web/users/login', { username, password });
       localStorage.setItem('token', response.data.token);
-      setError('');
-      alert('Login successful');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      navigate('/users/dashboard');
+    } catch (error) {
+      alert('Login failed: ' + error.response?.data?.error);
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">User Service</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      {!token ? (
-        <>
-          <h3 className="text-xl mb-2">Register</h3>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-            <button
-              onClick={handleRegister}
-              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-            >
-              Register
-            </button>
-          </div>
-          <h3 className="text-xl mt-6 mb-2">Login</h3>
-          <div className="space-y-4">
-            <input
-              type="text"
-              placeholder="Username"
-              value={loginUsername}
-              onChange={(e) => setLoginUsername(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <input
-              type="password"
-              placeholder="Password"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-            <button
-              onClick={handleLogin}
-              className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
-            >
-              Login
-            </button>
-          </div>
-        </>
-      ) : (
+    <div className="p-4">
+      <h2 className="text-xl mb-4">Login</h2>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
+      </form>
+    </div>
+  );
+}
+
+function Register() {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:3000/api/web/users/register', { username, email, password, role: 'user' });
+      navigate('/users/login');
+    } catch (error) {
+      alert('Registration failed: ' + error.response?.data?.error);
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl mb-4">Register</h2>
+      <form onSubmit={handleRegister} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="border p-2 w-full"
+        />
+        <button type="submit" className="bg-blue-500 text-white p-2">Register</button>
+      </form>
+    </div>
+  );
+}
+
+function Dashboard() {
+  const [data, setData] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchDashboard = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get('http://localhost:3000/api/web/dashboard/1', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setData(response.data);
+    } catch (error) {
+      alert('Failed to fetch dashboard: ' + error.response?.data?.error);
+      navigate('/users/login');
+    }
+  };
+
+  return (
+    <div className="p-4">
+      <h2 className="text-xl mb-4">Dashboard</h2>
+      <button onClick={fetchDashboard} className="bg-blue-500 text-white p-2 mb-4">Load Dashboard</button>
+      {data && (
         <div>
-          <p className="text-green-500">Logged in! Token: {token.substring(0, 10)}...</p>
-          <button
-            onClick={() => {
-              setToken(null);
-              localStorage.removeItem('token');
-            }}
-            className="w-full bg-red-500 text-white p-2 rounded hover:bg-red-600"
-          >
-            Logout
-          </button>
+          <h3>User: {data.user?.username}</h3>
+          <h4>Books:</h4>
+          <ul>
+            {data.books.map(book => (
+              <li key={book.id}>{book.title} by {book.author}</li>
+            ))}
+          </ul>
+          <h4>Transactions:</h4>
+          <ul>
+            {data.transactions.map(tx => (
+              <li key={tx.id}>{tx.transactionType} - Book ID: {tx.bookId}</li>
+            ))}
+          </ul>
         </div>
       )}
     </div>
   );
-};
+}
 
-export default UserApp;
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/" element={<Login />} />
+    </Routes>
+  );
+}
+
+export default App;
