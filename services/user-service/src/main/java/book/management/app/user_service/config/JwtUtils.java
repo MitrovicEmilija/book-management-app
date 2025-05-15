@@ -22,7 +22,8 @@ public class JwtUtils {
 
     public String generateToken(User user) {
         return Jwts.builder()
-                .setSubject(user.getUsername())
+                .setSubject(String.valueOf(user.getId())) // Set sub to numeric userId
+                .claim("username", user.getUsername()) // Add username as a custom claim
                 .claim("userId", String.valueOf(user.getId()))
                 .claim("roles", user.getRole().getName())
                 .setIssuedAt(new Date())
@@ -49,11 +50,11 @@ public class JwtUtils {
     }
 
     public String getUserIdFromJwtToken(String token) {
-        Claims claims = Jwts.parser()
+        return Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
-                .getBody();
-        return claims.get("userId", String.class);
+                .getBody()
+                .getSubject(); // Return sub (numeric userId)
     }
 
     public List<String> getRolesFromJwtToken(String token) {

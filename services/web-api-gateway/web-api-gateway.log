@@ -1,0 +1,4 @@
+{"level":"info","message":"Web API Gateway running on port 3000","timestamp":"2025-05-15T12:26:42.783Z"}
+{"level":"info","message":"Web API Gateway running on port 3000","timestamp":"2025-05-15T12:28:40.585Z"}
+{"level":"info","message":"User registration attempt","timestamp":"2025-05-15T12:28:45.525Z","username":"vojkan"}
+{"error":"getaddrinfo ENOTFOUND user-service-ita","level":"error","message":"Registration failed","timestamp":"2025-05-15T12:28:45.569Z","username":"vojkan"}

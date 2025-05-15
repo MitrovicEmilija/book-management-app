@@ -4,10 +4,12 @@ const protoLoader = require('@grpc/proto-loader');
 const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const logger = require('./logger');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // gRPC Client for book-service
 const PROTO_PATH = './book.proto';
@@ -33,22 +35,33 @@ const JWT_SECRET = Buffer.from(JWT_SECRET_ENCODED, 'base64');
 // Middleware for JWT validation
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
+  logger.info('Received Authorization header', { authHeader });
+
   if (!authHeader) {
     logger.warn('Missing authorization header');
     return res.status(401).json({ error: 'Authorization header required' });
   }
 
-  const token = authHeader.split(' ')[1];
+  const tokenParts = authHeader.split(' ');
+  if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+    logger.warn('Malformed authorization header', { authHeader });
+    return res.status(401).json({ error: 'Malformed authorization header' });
+  }
+
+  const token = tokenParts[1];
+  logger.info('Extracted token', { token });
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS512'] });
+    logger.info('Token validated in gateway', { decoded });
     req.user = decoded;
-    logger.info('Token validated in gateway', { user: decoded.sub });
     next();
   } catch (error) {
-    logger.error('JWT validation failed in gateway', { error: error.message });
+    logger.error('JWT validation failed in gateway', { error: error.message, token });
     return res.status(403).json({ error: 'Invalid token' });
   }
 };
+
 
 // Get all books
 app.get('/api/web/books', async (req, res) => {
@@ -198,23 +211,43 @@ app.post('/api/web/transactions', async (req, res) => {
 
 // Get dashboard data (protected)
 app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
-  const userId = req.params.userId;
-  logger.info('Fetching dashboard data', { userId });
+  const requestedUserId = req.params.userId;
+  const tokenUserId = req.user.userId;
+
+  logger.info('Fetching dashboard data', { requestedUserId, tokenUserId });
+
+  // Ensure user can only access their own dashboard
+  if (requestedUserId !== tokenUserId) {
+    logger.warn('Forbidden: user tried to access another user’s dashboard', {
+      requestedUserId,
+      tokenUserId,
+    });
+    return res.status(403).json({ error: 'Access denied' });
+  }
+
   try {
     // Fetch user details
-    const userResponse = await axios.get(`${USER_SERVICE_URL}/users/${userId}`);
+    const userResponse = await axios.get(`${USER_SERVICE_URL}/users/${requestedUserId}`, {
+      headers: { Authorization: req.headers.authorization }
+    });
     const user = userResponse.data;
 
-    // Fetch user's books
+    // Fetch user's books via gRPC
     const booksResponse = await new Promise((resolve, reject) => {
-      bookClient.GetBooksByUser({ userId }, (error, response) => {
-        if (error) reject(error);
-        else resolve(response);
+      bookClient.GetBooksByUser({ userId: requestedUserId }, (error, response) => {
+        if (error) {
+          logger.error('gRPC error fetching books', { error: error.message });
+          reject(new Error(`Book service error: ${error.message}`));
+        } else {
+          resolve(response);
+        }
       });
     });
 
     // Fetch user's transactions
-    const transactionsResponse = await axios.get(`${TRANSACTION_SERVICE_URL}/transactions/user/${userId}`);
+    const transactionsResponse = await axios.get(`${TRANSACTION_SERVICE_URL}/transactions/user/${requestedUserId}`, {
+      headers: { Authorization: req.headers.authorization }
+    });
 
     const dashboardData = {
       user: user || null,
@@ -222,13 +255,22 @@ app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
       transactions: transactionsResponse.data || []
     };
 
-    logger.info('Dashboard data fetched successfully', { userId });
+    logger.info('Dashboard data fetched successfully', { userId: requestedUserId });
     res.json(dashboardData);
   } catch (error) {
-    logger.error('Error fetching dashboard data', { userId, error: error.message });
-    res.status(error.response?.status || 500).json({ error: error.response?.data || 'Server error' });
+    const statusCode = error.response?.status || 500;
+    const errorMessage = error.response?.data?.error || error.message || 'Server error';
+
+    logger.error('Error fetching dashboard data', {
+      userId: requestedUserId,
+      statusCode,
+      errorMessage,
+    });
+
+    res.status(statusCode).json({ error: errorMessage });
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

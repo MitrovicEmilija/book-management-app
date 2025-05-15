@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -38,6 +39,9 @@ function Login() {
         />
         <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
       </form>
+      <p className="mt-4">
+        Don't have an account? <Link to="/users/register" className="text-blue-500">Register here</Link>
+      </p>
     </div>
   );
 }
@@ -95,13 +99,26 @@ function Dashboard() {
 
   const fetchDashboard = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3000/api/web/dashboard/1', {
+      let token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+      // Remove redundant "Bearer " if it's there
+      token = token.replace(/^Bearer\s+/i, '');
+
+      // Decode the JWT to get the userId
+      const decoded = jwtDecode(token);
+      console.log(decoded);
+      const userId = decoded.sub;
+      console.log(userId);
+
+      const response = await axios.get(`http://localhost:3000/api/web/dashboard/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setData(response.data);
     } catch (error) {
-      alert('Failed to fetch dashboard: ' + error.response?.data?.error);
+      alert('Failed to fetch dashboard: ' + (error.response?.data?.error || error.message));
       navigate('/users/login');
     }
   };
