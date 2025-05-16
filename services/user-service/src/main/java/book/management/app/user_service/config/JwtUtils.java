@@ -8,6 +8,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -21,11 +22,12 @@ public class JwtUtils {
     private long jwtExpirationMs;
 
     public String generateToken(User user) {
+        List<String> roles = Collections.singletonList(user.getRole().getName());
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId())) // Set sub to numeric userId
                 .claim("username", user.getUsername()) // Add username as a custom claim
                 .claim("userId", String.valueOf(user.getId()))
-                .claim("roles", user.getRole().getName())
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(SignatureAlgorithm.HS512, jwtSecret)

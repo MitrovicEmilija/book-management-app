@@ -11,7 +11,6 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// gRPC Client for book-service
 const PROTO_PATH = './book.proto';
 const packageDefinition = protoLoader.loadSync(PROTO_PATH, {
   keepCase: true,
@@ -26,13 +25,11 @@ const bookClient = new bookProto.BookService(
   grpc.credentials.createInsecure()
 );
 
-// Service URLs
 const USER_SERVICE_URL = process.env.USER_SERVICE_URL || 'http://user-service-ita:8080';
 const TRANSACTION_SERVICE_URL = process.env.TRANSACTION_SERVICE_URL || 'http://transaction-service-ita:6000';
 const JWT_SECRET_ENCODED = process.env.JWT_SECRET || 'GD01pc7/7BmRWmWtY71dIUjR1G+we3N5d9EKYWmzuFI6o6eRCsetl/9KruFclnFwmb7B9I62hhDfjUAl3IUDUw==';
 const JWT_SECRET = Buffer.from(JWT_SECRET_ENCODED, 'base64');
 
-// Middleware for JWT validation
 const authenticateJWT = (req, res, next) => {
   const authHeader = req.headers.authorization;
   logger.info('Received Authorization header', { authHeader });
@@ -62,8 +59,6 @@ const authenticateJWT = (req, res, next) => {
   }
 };
 
-
-// Get all books
 app.get('/api/web/books', async (req, res) => {
   logger.info('Fetching all books');
   bookClient.GetAllBooks({}, (error, response) => {
@@ -75,7 +70,6 @@ app.get('/api/web/books', async (req, res) => {
   });
 });
 
-// Get book by ID
 app.get('/api/web/books/:id', async (req, res) => {
   const bookId = parseInt(req.params.id);
   logger.info('Fetching book', { bookId });
@@ -88,7 +82,6 @@ app.get('/api/web/books/:id', async (req, res) => {
   });
 });
 
-// Get books by user (protected)
 app.get('/api/web/users/:userId/books', authenticateJWT, async (req, res) => {
   const userId = req.params.userId;
   logger.info('Fetching books for user', { userId });
@@ -101,7 +94,6 @@ app.get('/api/web/users/:userId/books', authenticateJWT, async (req, res) => {
   });
 });
 
-// Create book (protected)
 app.post('/api/web/books', authenticateJWT, async (req, res) => {
   const { title, author, isbn, userId } = req.body;
   logger.info('Creating book', { title, userId });
@@ -118,7 +110,6 @@ app.post('/api/web/books', authenticateJWT, async (req, res) => {
   });
 });
 
-// Update book (protected)
 app.put('/api/web/books/:id', authenticateJWT, async (req, res) => {
   const id = parseInt(req.params.id);
   const { title, author, isbn, userId } = req.body;
@@ -136,7 +127,6 @@ app.put('/api/web/books/:id', authenticateJWT, async (req, res) => {
   });
 });
 
-// Delete book (protected)
 app.delete('/api/web/books/:id', authenticateJWT, async (req, res) => {
   const bookId = parseInt(req.params.id);
   logger.info('Deleting book', { bookId });
@@ -149,20 +139,23 @@ app.delete('/api/web/books/:id', authenticateJWT, async (req, res) => {
   });
 });
 
-// User login
 app.post('/api/web/users/login', async (req, res) => {
   const { username, password } = req.body;
   logger.info('User login attempt', { username });
   try {
     const response = await axios.post(`${USER_SERVICE_URL}/users/login`, { username, password });
-    res.json({ token: response.data });
+    let token = response.data;
+    if (typeof token === 'string' && token.startsWith('Bearer ')) {
+      token = token.replace(/^Bearer\s+/i, '');
+    }
+    logger.info('Login response', { token });
+    res.json({ token });
   } catch (error) {
     logger.error('Login failed', { username, error: error.message });
     res.status(error.response?.status || 500).json({ error: error.response?.data || 'Server error' });
   }
 });
 
-// User registration
 app.post('/api/web/users/register', async (req, res) => {
   const { username, email, password, role } = req.body;
   logger.info('User registration attempt', { username });
@@ -177,7 +170,6 @@ app.post('/api/web/users/register', async (req, res) => {
   }
 });
 
-// Get transactions (unprotected)
 app.get('/api/web/transactions', async (req, res) => {
   const { page = 1, limit = 10 } = req.query;
   logger.info('Fetching transactions', { page, limit });
@@ -192,7 +184,6 @@ app.get('/api/web/transactions', async (req, res) => {
   }
 });
 
-// Create transaction (unprotected)
 app.post('/api/web/transactions', async (req, res) => {
   const { userId, bookId, transactionType } = req.body;
   logger.info('Creating transaction', { userId, bookId, transactionType });
@@ -209,14 +200,12 @@ app.post('/api/web/transactions', async (req, res) => {
   }
 });
 
-// Get dashboard data (protected)
 app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
   const requestedUserId = req.params.userId;
-  const tokenUserId = req.user.userId;
+  const tokenUserId = req.user.sub;
 
   logger.info('Fetching dashboard data', { requestedUserId, tokenUserId });
 
-  // Ensure user can only access their own dashboard
   if (requestedUserId !== tokenUserId) {
     logger.warn('Forbidden: user tried to access another user’s dashboard', {
       requestedUserId,
@@ -226,13 +215,13 @@ app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
   }
 
   try {
-    // Fetch user details
+    logger.info('Fetching user data', { userId: requestedUserId });
     const userResponse = await axios.get(`${USER_SERVICE_URL}/users/${requestedUserId}`, {
       headers: { Authorization: req.headers.authorization }
     });
     const user = userResponse.data;
 
-    // Fetch user's books via gRPC
+    logger.info('Fetching books data', { userId: requestedUserId });
     const booksResponse = await new Promise((resolve, reject) => {
       bookClient.GetBooksByUser({ userId: requestedUserId }, (error, response) => {
         if (error) {
@@ -244,7 +233,7 @@ app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
       });
     });
 
-    // Fetch user's transactions
+    logger.info('Fetching transactions data', { userId: requestedUserId });
     const transactionsResponse = await axios.get(`${TRANSACTION_SERVICE_URL}/transactions/user/${requestedUserId}`, {
       headers: { Authorization: req.headers.authorization }
     });
@@ -270,7 +259,6 @@ app.get('/api/web/dashboard/:userId', authenticateJWT, async (req, res) => {
     res.status(statusCode).json({ error: errorMessage });
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

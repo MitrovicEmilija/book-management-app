@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/users/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/users/**").authenticated()
                         .requestMatchers("/users/**").authenticated()
+                        .requestMatchers("/users/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

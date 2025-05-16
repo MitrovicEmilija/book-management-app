@@ -1,5 +1,6 @@
 package book.management.app.user_service.config;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -22,40 +24,56 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtils jwtUtils;
 
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(JwtAuthFilter.class);
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authHeader = request.getHeader("Authorization");
+        logger.info("Received Authorization header: {}", authHeader);
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            // Extract the JWT token from the header
-            String token = authHeader.substring(7);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.debug("No valid Bearer token found, proceeding without authentication");
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-            // Validate the token
+        String token = authHeader.substring(7);
+        logger.debug("Extracted token: {}", token);
+
+        try {
             if (jwtUtils.validateJwtToken(token)) {
                 String email = jwtUtils.getEmailFromJwtToken(token);
                 String userId = jwtUtils.getUserIdFromJwtToken(token);
-
-                // Extract roles from the token
                 List<String> roles = jwtUtils.getRolesFromJwtToken(token);
+                logger.info("Parsed userId: {}, email: {}, roles: {}", userId, email, roles);
 
-                // Convert roles to SimpleGrantedAuthority
                 List<SimpleGrantedAuthority> authorities = roles.stream()
-                        .map(role -> new SimpleGrantedAuthority(role))
+                        .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-                // Create the authentication object
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        email, null, authorities);  // Include roles in the authorities
+                        email, null, authorities);
+                // Combine custom details and web details
+                Map<String, Object> details = Map.of(
+                        "userId", userId,
+                        "roles", roles,
+                        "webDetails", new WebAuthenticationDetailsSource().buildDetails(request)
+                );
+                authentication.setDetails(details);
 
-                // Set additional details (userId)
-                authentication.setDetails(Map.of("userId", userId));
-
-                // Set authentication in SecurityContextHolder
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                logger.debug("Authentication set for userId: {}", userId);
+            } else {
+                logger.warn("Invalid JWT token");
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return;
             }
+        } catch (JwtException e) {
+            logger.error("JWT validation failed: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
         }
 
-        // Continue with the filter chain
         filterChain.doFilter(request, response);
     }
 }

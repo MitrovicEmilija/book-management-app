@@ -16,7 +16,8 @@ function App() {
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
             <li><Link to="/books">Books</Link></li>
-            <li><Link to="/transactions">Transactions</Link></li>
+            <li><Link to="/books/create">Create Book</Link></li>
+            <li><Link to="/transactions">About us</Link></li>
           </ul>
         </nav>
         <Suspense fallback={<div>Loading...</div>}>

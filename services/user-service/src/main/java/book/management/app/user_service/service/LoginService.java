@@ -41,4 +41,8 @@ public class LoginService {
             throw new RuntimeException("User not found");
         }
     }
+
+    public User findUserById(Long id) {
+        return userRepository.findUserById(id);
+    }
 }
