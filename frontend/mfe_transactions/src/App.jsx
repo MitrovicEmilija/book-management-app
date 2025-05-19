@@ -6,7 +6,6 @@ function AboutUs() {
   return (
     <div className="p-4">
       <h2 className="text-xl mb-4">ABOUT US</h2>
-      
     </div>
   );
 }

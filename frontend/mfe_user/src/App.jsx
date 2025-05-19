@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import './App.css';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -22,28 +23,31 @@ function Login() {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4">Login</h2>
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2">Login</button>
-      </form>
-      <p className="mt-4">
-        Don't have an account? <Link to="/users/register" className="text-blue-500">Register here</Link>
-      </p>
+    <div>
+      <div className="login-card">
+        <h2>Login</h2>
+        <form onSubmit={handleLogin} className="login-form">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="" 
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="" 
+          />
+          <button type="submit" className="">Login</button> 
+        </form>
+        <p className="login-footer">
+          Don't have an account?{' '}
+          <Link to="/users/register">Register here</Link>
+        </p>
+      </div>
     </div>
   );
 }
@@ -65,32 +69,37 @@ function Register() {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4">Register</h2>
-      <form onSubmit={handleRegister} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2">Register</button>
-      </form>
+    <div>
+      <div className="login-card">
+        <h2>Register</h2>
+        <form onSubmit={handleRegister} className="login-form">
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="" 
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="" 
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="" 
+          />
+          <button type="submit" className="">Register</button> 
+        </form>
+        {<p className="login-footer">
+          Already have an account? <Link to="/users/login">Login here</Link>
+        </p>}
+      </div>
     </div>
   );
 }
@@ -182,91 +191,89 @@ function Dashboard() {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4">Dashboard</h2>
-      <button onClick={fetchDashboard} className="bg-blue-500 text-white p-2 mb-4">Load Dashboard</button>
+    <div>
+      <div className="dashboard-card">
+        <h2>Dashboard</h2>
+        <button onClick={fetchDashboard} className="dashboard-button">Load Dashboard</button>
 
-      {/* Add Book Form */}
-      <div className="mb-6">
-        <h3 className="text-lg mb-2">Add New Book</h3>
-        <form onSubmit={handleBookSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Title"
-            value={bookForm.title}
-            onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
-            className="border p-2 w-full"
-          />
-          <input
-            type="text"
-            placeholder="Author"
-            value={bookForm.author}
-            onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
-            className="border p-2 w-full"
-          />
-          <input
-            type="text"
-            placeholder="ISBN"
-            value={bookForm.isbn}
-            onChange={(e) => setBookForm({ ...bookForm, isbn: e.target.value })}
-            className="border p-2 w-full"
-          />
-          <button type="submit" className="bg-blue-500 text-white p-2">Add Book</button>
-        </form>
-      </div>
-
-      {/* Create Transaction Form */}
-      <div className="mb-6">
-        <h3 className="text-lg mb-2">Create Transaction</h3>
-        <form onSubmit={handleTransactionSubmit} className="space-y-4">
-          <input
-            type="text"
-            placeholder="Book ID"
-            value={transactionForm.bookId}
-            onChange={(e) => setTransactionForm({ ...transactionForm, bookId: e.target.value })}
-            className="border p-2 w-full"
-          />
-          <select
-            value={transactionForm.transactionType}
-            onChange={(e) => setTransactionForm({ ...transactionForm, transactionType: e.target.value })}
-            className="border p-2 w-full"
-          >
-            <option value="BORROW">Borrow</option>
-            <option value="PURCHASE">Purchase</option>
-            <option value="RETURN">Return</option>
-          </select>
-          <button type="submit" className="bg-blue-500 text-white p-2">Create Transaction</button>
-        </form>
-      </div>
-
-      {/* Dashboard Data */}
-      {data && (
-        <div>
-          <h3>User: {data.user?.username}</h3>
-          <h4>Books:</h4>
-          <ul>
-            {data.books.map(book => (
-              <li key={book.id} className="mb-2 flex justify-between items-center">
-                <span>ID: {book.id} - {book.title} by {book.author}</span>
-                <button
-                  onClick={() => handleDeleteBook(book.id)}
-                  className="bg-red-500 text-white p-1 rounded"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-          <h4>Transactions:</h4>
-          <ul>
-            {data.transactions.map(tx => (
-              <li key={tx.id} className="mb-2">
-                {tx.transactionType} - Book ID: {tx.bookId}
-              </li>
-            ))}
-          </ul>
+        {/* Add Book Form */}
+        <div className="dashboard-section">
+          <h3>Add New Book</h3>
+          <form onSubmit={handleBookSubmit} className="login-form">
+            <input
+              type="text"
+              placeholder="Title"
+              value={bookForm.title}
+              onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="Author"
+              value={bookForm.author}
+              onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
+            />
+            <input
+              type="text"
+              placeholder="ISBN"
+              value={bookForm.isbn}
+              onChange={(e) => setBookForm({ ...bookForm, isbn: e.target.value })}
+            />
+            <button type="submit">Add Book</button>
+          </form>
         </div>
-      )}
+
+        {/* Create Transaction Form */}
+        <div className="dashboard-section">
+          <h3>Create Transaction</h3>
+          <form onSubmit={handleTransactionSubmit} className="login-form">
+            <input
+              type="text"
+              placeholder="Book ID"
+              value={transactionForm.bookId}
+              onChange={(e) => setTransactionForm({ ...transactionForm, bookId: e.target.value })}
+            />
+            <select
+              className="dashboard-select"
+              value={transactionForm.transactionType}
+              onChange={(e) => setTransactionForm({ ...transactionForm, transactionType: e.target.value })}
+            >
+              <option value="BORROW">Borrow</option>
+              <option value="PURCHASE">Purchase</option>
+              <option value="RETURN">Return</option>
+            </select>
+            <button type="submit">Create Transaction</button>
+          </form>
+        </div>
+
+        {/* Dashboard Data */}
+        {data && (
+          <div className="dashboard-section">
+            <h3>User: {data.user?.username}</h3>
+            <h4>Books:</h4>
+            <ul className="dashboard-list">
+              {data.books.map(book => (
+                <li key={book.id}>
+                  <span>ID: {book.id} - {book.title} by {book.author}</span>
+                  <button
+                    onClick={() => handleDeleteBook(book.id)}
+                    className="dashboard-button delete"
+                  >
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <h4>Transactions:</h4>
+            <ul className="dashboard-list">
+              {data.transactions.map(tx => (
+                <li key={tx.id}>
+                  {tx.transactionType} - Book ID: {tx.bookId}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

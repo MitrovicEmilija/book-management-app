@@ -1,6 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import './index.css';
+import './App.css';
 
 // Lazy load remote microfrontends
 const UserApp = lazy(() => import('mfe_user/App'));
@@ -10,8 +10,8 @@ const TransactionsApp = lazy(() => import('mfe_transactions/App'));
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-100">
-        <nav className="bg-blue-600 p-4">
+      <div className="app-container">
+        <nav className="nav">
           <ul className="flex space-x-4 text-white">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/users">Users</Link></li>
@@ -20,9 +20,19 @@ function App() {
             <li><Link to="/transactions">About us</Link></li>
           </ul>
         </nav>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className="content">Loading...</div>}>
           <Routes>
-            <Route path="/" element={<h1 className="text-2xl p-4">Welcome to the Library App</h1>} />
+            <Route
+              path="/"
+              element={
+                <>
+                  <div className="overlay"></div>
+                  <div className="content">
+                    <h1>Welcome to the Library App</h1>
+                  </div>
+                </>
+              }
+            />
             <Route path="/users/*" element={<UserApp />} />
             <Route path="/books/*" element={<BookApp />} />
             <Route path="/transactions/*" element={<TransactionsApp />} />

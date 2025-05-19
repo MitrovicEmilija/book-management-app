@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import './App.css';
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -41,12 +42,20 @@ function BookList() {
   }, []);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4">Books</h2>
-      <ul>
+    <div>
+      <ul className="books-grid">
         {books.map(book => (
-          <li key={book.id} className="mb-2">
-            {book.title} by {book.author} - Status: {book.status}
+          <li key={book.id} className="book-card">
+            <img
+              src="http://localhost:3003/book.jpg"
+              alt={`${book.title} cover`}
+              className="book-image"
+            />
+            <div className="book-details">
+              <h3>{book.title}</h3>
+              <p>by {book.author}</p>
+              <p>Status: {book.status}</p>
+            </div>
           </li>
         ))}
       </ul>
@@ -111,32 +120,31 @@ function CreateBook() {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl mb-4">Create Book</h2>
-      <form onSubmit={handleCreate} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="Author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
-          placeholder="ISBN"
-          value={isbn}
-          onChange={(e) => setIsbn(e.target.value)}
-          className="border p-2 w-full"
-        />
-        <button type="submit" className="bg-blue-500 text-white p-2">Create</button>
-      </form>
+    <div>
+      <div className="create-card">
+        <h2>Create Book</h2>
+        <form onSubmit={handleCreate} className="create-form">
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Author"
+            value={author}
+            onChange={(e) => setAuthor(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="ISBN"
+            value={isbn}
+            onChange={(e) => setIsbn(e.target.value)}
+          />
+          <button type="submit">Create</button>
+        </form>
+      </div>
     </div>
   );
 }
