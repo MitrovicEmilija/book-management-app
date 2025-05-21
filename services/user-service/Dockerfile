@@ -12,9 +12,6 @@ COPY pom.xml .
 # Copy the source code
 COPY src src
 
-# Copy the .env file to the container (ensure it's in the root of the container's file system)
-COPY .env .env
-
 # Build the application (this will download dependencies and package the app)
 RUN ./mvnw clean package -DskipTests
 

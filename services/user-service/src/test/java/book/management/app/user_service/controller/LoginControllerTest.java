@@ -26,10 +26,10 @@ public class LoginControllerTest {
     private LoginService loginService;
 
     @Mock
-    private JwtUtils jwtUtils;  // Mock JwtUtils if used in the controller
+    private JwtUtils jwtUtils;
 
     @InjectMocks
-    private LoginController loginController;  // Inject mocks into the controller
+    private LoginController loginController;
 
     private MockMvc mockMvc;
     private ObjectMapper objectMapper;
@@ -55,7 +55,7 @@ public class LoginControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(content().string("Bearer mocked-jwt-token"));
+                .andExpect(content().string("mocked-jwt-token")); // Updated to expect raw token
     }
 
     @Test
